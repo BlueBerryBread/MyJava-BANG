@@ -4,12 +4,9 @@ import enums.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Collections;
 
 public class Game {
-    private Integer gameSeed;
-    private boolean started;
     private byte nrOfPlayers;
     private ArrayList<Player> players;
     private ArrayList<Classes> classes;
@@ -17,69 +14,90 @@ public class Game {
     private ArrayList<Card> deck;
     private ArrayList<Card> discardedDeck;
     private final byte nrOfCards = 80;
-    private byte playerTurn;
+
+    private void validateNrOfPlayers() throws IllegalArgumentException {
+        if (nrOfPlayers < 4 || nrOfPlayers > 7) {
+            throw new IllegalArgumentException("Invalid number of players!");
+        }
+    }
 
     public Game(byte nrOfPlayers) throws IllegalArgumentException {
         this.nrOfPlayers = nrOfPlayers;
-        this.started = false;
 
-        // Generat clase + random
-        classes = new ArrayList<Classes>();
-        classes.addAll(Arrays.asList(Classes.SHER, Classes.RENE, 
-                                    Classes.OUTL, Classes.OUTL));
-        switch (nrOfPlayers) {
-            case 4: break;
-            case 5: classes.add(Classes.DEPU);
-                    break;
-            case 6: classes.add(Classes.OUTL);
-                    break;
-            case 7: classes.add(Classes.DEPU);
-                    break;
-            default: throw new IllegalArgumentException("Invalid number of players!");
+        validateNrOfPlayers();
+
+        classes = generateClasses();
+
+        characters = generateCharacters();
+
+        deck = generateDeck();
+
+        discardedDeck = new ArrayList<Card>(nrOfCards);
+    }
+
+    private ArrayList<Classes> generateClasses() {
+        ArrayList<Classes> classes = new ArrayList<>();
+        classes.addAll(Arrays.asList(Classes.SHER, Classes.RENE, Classes.OUTL, Classes.OUTL));
+        
+        if (nrOfPlayers > 4) {
+            classes.add(Classes.DEPU);
         }
-        gameSeed = Generator.generateGameSeed(); // afisat
+        if (nrOfPlayers > 5) {
+            classes.add(Classes.OUTL);
+        }
+        if (nrOfPlayers > 6) {
+            classes.add(Classes.DEPU);
+        }
+
         Collections.shuffle(classes, Generator.getGenerator());
 
-        // Generat caractere + random
-        characters = new ArrayList<Characters>();
-        characters.addAll(Arrays.asList(Characters.PAUL, Characters.JOUR, Characters.BLAC, 
-                                        Characters.SLAB, Characters.ELGR, Characters.JESS, 
-                                        Characters.SUZY, Characters.WILL, Characters.ROSE, 
-                                        Characters.BART, Characters.PEDR, Characters.SIDK, 
-                                        Characters.LUCK, Characters.VULT, Characters.CALA, 
-                                        Characters.KITC));
+        return classes;
+    }
+
+    private ArrayList<Characters> generateCharacters() {
+        ArrayList<Characters> characters = new ArrayList<>();
+
+        characters.addAll(Arrays.asList(Characters.PAUL, Characters.JOUR, Characters.BLAC, Characters.SLAB,
+                Characters.ELGR, Characters.JESS, Characters.SUZY, Characters.WILL, Characters.ROSE, Characters.BART,
+                Characters.PEDR, Characters.SIDK, Characters.LUCK, Characters.VULT, Characters.CALA, Characters.KITC));
+
         Collections.shuffle(characters, Generator.getGenerator());
 
-        // Generat deck + random ♠ ♥ ♦ ♣
-        deck = new ArrayList<Card>(nrOfCards);
-        discardedDeck = new ArrayList<Card>(nrOfCards);
-        createDeck(deck);
-        Collections.shuffle(deck, Generator.getGenerator());
+        return characters;
     }
-    
+
+    private ArrayList<Card> generateDeck() {
+        ArrayList<Card> deck = new ArrayList<>(nrOfCards);
+
+        createDeck(deck);
+
+        Collections.shuffle(deck, Generator.getGenerator());
+
+        return deck;
+    }
+
     private void createDeck(ArrayList<Card> deck) {
-        deck.addAll(Arrays.asList(Weapons.SCHO.updateWeapons(12, '♣'), Weapons.SCHO.updateWeapons(13, '♣'), 
-                                  Weapons.REMI.updateWeapons(14, '♣'), Weapons.SCHO.updateWeapons(14, '♠'), 
-                                  Weapons.WINC.updateWeapons(8, '♠'), Weapons.CARA.updateWeapons(1, '♣'),
-                                  Weapons.VOLC.updateWeapons(10, '♠'), Weapons.VOLC.updateWeapons(10, '♣')));
-                                  
+        deck.addAll(Arrays.asList(Weapons.SCHO.updateWeapons(12, '♣'), Weapons.SCHO.updateWeapons(13, '♣'),
+                Weapons.REMI.updateWeapons(14, '♣'), Weapons.SCHO.updateWeapons(14, '♠'),
+                Weapons.WINC.updateWeapons(8, '♠'), Weapons.CARA.updateWeapons(1, '♣'),
+                Weapons.VOLC.updateWeapons(10, '♠'), Weapons.VOLC.updateWeapons(10, '♣')));
+
         deck.addAll(Arrays.asList(PermanentCards.JAIL.updatePermanentCards(10, '♠'),
-                                  PermanentCards.JAIL.updatePermanentCards(12, '♠'), 
-                                  PermanentCards.JAIL.updatePermanentCards(4, '♥'),
-                                  PermanentCards.DYNA.updatePermanentCards(2, '♥'), 
-                                  PermanentCards.SCOP.updatePermanentCards(1, '♠'),
-                                  PermanentCards.MUST.updatePermanentCards(8, '♥'), 
-                                  PermanentCards.MUST.updatePermanentCards(9, '♥'),
-                                  PermanentCards.BARR.updatePermanentCards(13, '♠'),
-                                  PermanentCards.BARR.updatePermanentCards(14, '♠')));
+                PermanentCards.JAIL.updatePermanentCards(12, '♠'), PermanentCards.JAIL.updatePermanentCards(4, '♥'),
+                PermanentCards.DYNA.updatePermanentCards(2, '♥'), PermanentCards.SCOP.updatePermanentCards(1, '♠'),
+                PermanentCards.MUST.updatePermanentCards(8, '♥'), PermanentCards.MUST.updatePermanentCards(9, '♥'),
+                PermanentCards.BARR.updatePermanentCards(13, '♠'), PermanentCards.BARR.updatePermanentCards(14, '♠')));
 
         for (int cardNumber = 2; cardNumber < 10; ++cardNumber) {
             deck.add(PlayingCards.BANG.updatePlayingCards(cardNumber, '♣'));
         }
+
         for (int cardNumber = 1; cardNumber < 15; ++cardNumber) {
-            if (cardNumber == 11) continue;
+            if (cardNumber == 11)
+                continue;
             deck.add(PlayingCards.BANG.updatePlayingCards(cardNumber, '♦'));
         }
+
         deck.add(PlayingCards.BANG.updatePlayingCards(13, '♥'));
         deck.add(PlayingCards.BANG.updatePlayingCards(14, '♥'));
         deck.add(PlayingCards.BANG.updatePlayingCards(1, '♥'));
@@ -88,6 +106,7 @@ public class Game {
         for (int cardNumber = 2; cardNumber < 9; ++cardNumber) {
             deck.add(PlayingCards.MISS.updatePlayingCards(cardNumber, '♠'));
         }
+
         deck.add(PlayingCards.MISS.updatePlayingCards(10, '♣'));
         deck.add(PlayingCards.MISS.updatePlayingCards(12, '♣'));
         deck.add(PlayingCards.MISS.updatePlayingCards(13, '♣'));
@@ -95,7 +114,9 @@ public class Game {
         deck.add(PlayingCards.MISS.updatePlayingCards(1, '♣'));
 
         for (int cardNumber = 6; cardNumber < 13; ++cardNumber) {
-            if (cardNumber == 11) continue;
+            if (cardNumber == 11)
+                continue;
+                
             deck.add(PlayingCards.BEER.updatePlayingCards(cardNumber, '♥'));
         }
 
@@ -111,7 +132,7 @@ public class Game {
 
         deck.add(PlayingCards.STAG.updatePlayingCards(9, '♠'));
         deck.add(PlayingCards.STAG.updatePlayingCards(9, '♠'));
-          
+
         deck.add(PlayingCards.WELL.updatePlayingCards(3, '♥'));
 
         deck.add(PlayingCards.GATL.updatePlayingCards(10, '♥'));
@@ -128,7 +149,7 @@ public class Game {
 
         deck.add(PlayingCards.SALO.updatePlayingCards(5, '♥'));
     }
-
+0
     public void startGame(List<Player> players) {
         for (Player player : players) {
             player.updateInfo(classes.get(0), characters.get(0), Weapons.COLT);
@@ -136,13 +157,12 @@ public class Game {
                 player.getInfo().addCard(deck.remove(0));
             }
             if (classes.get(0) == Classes.SHER) {
-                playerTurn = player.getInfo().getId();
+                player.getInfo().getId();
             }
             classes.remove(0);
             characters.remove(0);
         }
         this.players = new ArrayList<Player>(players);
-        started = true;
     }
 
     public void startTurn(Player player) {
@@ -154,8 +174,8 @@ public class Game {
             Card fateCard = deck.remove(0);
             discardedDeck.add(0, fateCard);
 
-            if (fateCard.getCardType().getValue() == '♠' && fateCard.getCardType().getKey() >= 2 &&
-                fateCard.getCardType().getKey() <= 9) {
+            if (fateCard.getCardType().getValue() == '♠' && fateCard.getCardType().getKey() >= 2
+                    && fateCard.getCardType().getKey() <= 9) {
                 for (PermanentCards card : player.getInfo().getCardsInPlay()) {
                     if (card == PermanentCards.DYNA) {
                         discardedDeck.add(0, card);
@@ -173,8 +193,8 @@ public class Game {
             } else {
                 for (PermanentCards card : player.getInfo().getCardsInPlay()) {
                     if (card == PermanentCards.DYNA) {
-                        players.get((player.getInfo().getId() + 1) % players.size()).
-                                getInfo().getCardsInPlay().add(card); // ID poate nu e de la 0 ci 1
+                        players.get((player.getInfo().getId() + 1) % players.size()).getInfo().getCardsInPlay()
+                                .add(card); // ID poate nu e de la 0 ci 1
                         break;
                     }
                 }

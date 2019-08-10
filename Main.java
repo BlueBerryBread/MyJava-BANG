@@ -15,12 +15,12 @@ public final class Main {
         }
         test.startGame(players);
         
-        /*for (Player player : test.getPlayers()) {
-            System.out.println(player.getInfo().getGameClass().getValue() + player.getInfo().getCharacter().getValue() + " " +
+        for (Player player : test.getPlayers()) {
+            System.out.println(player.getInfo().getGameClass().getValue() + " - " + player.getInfo().getCharacter().getValue() + " " +
                                player.getInfo().getLife() + " " + player.getInfo().getWeapon().getValue() + " " + player.getInfo().getId());
             for (Card card : player.getInfo().getHand()) {
                 System.out.println(card);
             }
-        }*/
+        }
     }
 }

@@ -3,7 +3,6 @@ package game;
 import enums.*;
 
 import java.net.Socket;
-import java.util.List;
 
 public class Player {
     // conexiune IP
