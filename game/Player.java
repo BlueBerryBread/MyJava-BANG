@@ -10,22 +10,22 @@ public class Player {
     private PlayerInformation info;
 
     // test
-    public Player () {
+    public Player() {
     }
 
-    Player (Socket connection) {
+    Player(Socket connection) {
         this.connection = connection;
     }
 
-    Player (Classes gameClass, Characters character, Weapons weapon) {
+    Player(Classes gameClass, Characters character, Weapons weapon) {
         info = new PlayerInformation(gameClass, character, weapon);
     }
 
-    public void updateInfo (Classes gameClass, Characters character, Weapons weapon) {
+    public void updateInfo(Classes gameClass, Characters character, Weapons weapon) {
         info = new PlayerInformation(gameClass, character, weapon);
     }
 
-    public void updateConnection (Socket connection) {
+    public void updateConnection(Socket connection) {
         this.connection = connection;
     }
 
