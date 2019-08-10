@@ -7,76 +7,69 @@ import java.util.List;
 import java.util.Collections;
 
 public class Game {
-    private byte nrOfPlayers;
-    private ArrayList<Player> players;
-    private ArrayList<Classes> classes;
-    private ArrayList<Characters> characters;
-    private ArrayList<Card> deck;
-    private ArrayList<Card> discardedDeck;
+    private byte nrPlayers;
+    private List<Player> players;
+    private List<Classes> classes;
+    private List<Characters> characters;
+    private List<Card> deck;
+    private List<Card> discardedDeck;
     private final byte nrOfCards = 80;
 
     private void validateNrOfPlayers() throws IllegalArgumentException {
-        if (nrOfPlayers < 4 || nrOfPlayers > 7) {
+        if (nrPlayers < 4 || nrPlayers > 7) {
             throw new IllegalArgumentException("Invalid number of players!");
         }
     }
 
-    public Game(byte nrOfPlayers) throws IllegalArgumentException {
-        this.nrOfPlayers = nrOfPlayers;
+    public Game(byte nrPlayers) throws IllegalArgumentException {
+        this.nrPlayers = nrPlayers;
 
         validateNrOfPlayers();
 
-        classes = generateClasses();
+        generateClasses();
 
-        characters = generateCharacters();
+        generateCharacters();
 
-        deck = generateDeck();
-
-        discardedDeck = new ArrayList<Card>(nrOfCards);
+        generateDecks();
     }
 
-    private ArrayList<Classes> generateClasses() {
-        ArrayList<Classes> classes = new ArrayList<>();
+    private void generateClasses() {
+        classes = new ArrayList<>();
         classes.addAll(Arrays.asList(Classes.SHER, Classes.RENE, Classes.OUTL, Classes.OUTL));
         
-        if (nrOfPlayers > 4) {
+        if (nrPlayers > 4) {
             classes.add(Classes.DEPU);
         }
-        if (nrOfPlayers > 5) {
+        if (nrPlayers > 5) {
             classes.add(Classes.OUTL);
         }
-        if (nrOfPlayers > 6) {
+        if (nrPlayers > 6) {
             classes.add(Classes.DEPU);
         }
 
         Collections.shuffle(classes, Generator.getGenerator());
-
-        return classes;
     }
 
-    private ArrayList<Characters> generateCharacters() {
-        ArrayList<Characters> characters = new ArrayList<>();
+    private void generateCharacters() {
+        characters = new ArrayList<>();
 
         characters.addAll(Arrays.asList(Characters.PAUL, Characters.JOUR, Characters.BLAC, Characters.SLAB,
                 Characters.ELGR, Characters.JESS, Characters.SUZY, Characters.WILL, Characters.ROSE, Characters.BART,
                 Characters.PEDR, Characters.SIDK, Characters.LUCK, Characters.VULT, Characters.CALA, Characters.KITC));
 
         Collections.shuffle(characters, Generator.getGenerator());
-
-        return characters;
     }
 
-    private ArrayList<Card> generateDeck() {
-        ArrayList<Card> deck = new ArrayList<>(nrOfCards);
+    private void generateDecks() {
+        deck = new ArrayList<>(nrOfCards);
+        discardedDeck = new ArrayList<>(nrOfCards);
 
         createDeck(deck);
 
         Collections.shuffle(deck, Generator.getGenerator());
-
-        return deck;
     }
 
-    private void createDeck(ArrayList<Card> deck) {
+    private void createDeck(List<Card> deck) {
         deck.addAll(Arrays.asList(Weapons.SCHO.updateWeapons(12, '♣'), Weapons.SCHO.updateWeapons(13, '♣'),
                 Weapons.REMI.updateWeapons(14, '♣'), Weapons.SCHO.updateWeapons(14, '♠'),
                 Weapons.WINC.updateWeapons(8, '♠'), Weapons.CARA.updateWeapons(1, '♣'),
@@ -149,7 +142,7 @@ public class Game {
 
         deck.add(PlayingCards.SALO.updatePlayingCards(5, '♥'));
     }
-0
+
     public void startGame(List<Player> players) {
         for (Player player : players) {
             player.updateInfo(classes.get(0), characters.get(0), Weapons.COLT);
@@ -227,13 +220,13 @@ public class Game {
      * @return the nrOfPlayers
      */
     public byte getNrOfPlayers() {
-        return nrOfPlayers;
+        return nrPlayers;
     }
 
     /**
      * @return the players
      */
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 }

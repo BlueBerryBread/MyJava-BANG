@@ -8,9 +8,11 @@ public final class Main {
     }
 
     public static void main(String[] args) {
-        Game test = new Game((byte) 5);
+        final byte nrPlayers = 5;
+
+        Game test = new Game(nrPlayers);
         ArrayList<Player> players = new ArrayList<>();
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < nrPlayers; ++i) {
             players.add(new Player());
         }
         test.startGame(players);
